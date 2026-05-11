@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>八年級數學下學期第二次段考 詳解與分析</title>
+    
+    <!-- 引入 Tailwind CSS 進行快速排版 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 KaTeX 進行數學公式渲染 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f8fafc;
+        }
+        /* 針對數學符號稍微放大，提升閱讀體驗 */
+        .katex { font-size: 1.15em; }
+        
+        /* 隱藏區塊的過渡動畫 */
+        .answer-block {
+            transition: all 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            margin-top: 0;
+        }
+        .answer-block.show {
+            max-height: 1000px;
+            opacity: 1;
+            margin-top: 1rem;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased pb-20">
+
+    <!-- 頂部 Header -->
+    <header class="bg-indigo-600 text-white shadow-md py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">八下數學 第二次段考</h1>
+            <p class="text-indigo-100 text-lg">超詳細白話版詳解，幫你一步步把觀念釐清！</p>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 mt-8">
+        
+        <!-- 頁籤與控制按鈕 -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+            <div class="flex space-x-2 bg-gray-200 p-1 rounded-lg">
+                <button id="tab-mcq" class="tab-btn active bg-white text-indigo-600 shadow-sm px-6 py-2 rounded-md font-bold transition">選擇題 (16題)</button>
+                <button id="tab-fill" class="tab-btn text-gray-600 hover:text-indigo-600 px-6 py-2 rounded-md font-bold transition">填充題 (12題)</button>
+            </div>
+            <button id="toggle-all" class="text-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md shadow-sm transition">
+                展開全部詳解
+            </button>
+        </div>
+
+        <!-- 選擇題區塊 -->
+        <section id="section-mcq" class="space-y-4">
+            <!-- 題目由 JS 動態生成填入 -->
+        </section>
+
+        <!-- 填充題區塊 -->
+        <section id="section-fill" class="space-y-4 hidden">
+            <!-- 題目由 JS 動態生成填入 -->
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="mt-16 text-center text-gray-400 text-sm pb-8">
+        <p>用心整理，專為國中生打造的解題系統</p>
+    </footer>
+
+    <!-- JavaScript 邏輯與資料 -->
+    <script>
+        // --- 題庫資料 (Data) ---
+        const mcqData = [
+            {
+                q: "1. 如圖, $\\angle A$ 的度數為何?",
+                ans: "(B) 42",
+                exp: "同學，這題考的是「三角形外角定理」：三角形的一個外角，會等於另外兩個不相鄰的內角相加。<br>圖中標示外角是 $85^{\\circ}$，其中一個內角是 $43^{\\circ}$。<br>所以 $\\angle A + 43^{\\circ} = 85^{\\circ}$，算出來 $\\angle A = 85^{\\circ} - 43^{\\circ} = 42^{\\circ}$。"
+            },
+            {
+                q: "2. 如圖, $\\angle 1+\\angle 2=220^{\\circ}$,則 $\\angle 3$ 的度數為何?",
+                ans: "(D) 140",
+                exp: "這題考「多邊形外角和」。不管是什麼多邊形，外角和永遠都是 $360^{\\circ}$！<br>題目給了三個外角 $\\angle 1, \\angle 2, \\angle 3$，所以把它們加起來：$\\angle 1 + \\angle 2 + \\angle 3 = 360^{\\circ}$。<br>因為已知 $\\angle 1+\\angle 2=220^{\\circ}$，直接代入得到 $220^{\\circ} + \\angle 3 = 360^{\\circ}$，得出 $\\angle 3 = 140^{\\circ}$。"
+            },
+            {
+                q: "3. 右圖 $\\triangle ABC$ 中, $\\angle 1=130^{\\circ}$, $\\angle B -\\angle C=60^{\\circ}$,則 $\\angle B=?$",
+                ans: "(B) $95^{\\circ}$",
+                exp: "1. 先用「外角定理」：外角 $\\angle 1 = 130^{\\circ}$，等於兩個內角相加，所以 $\\angle B + \\angle C = 130^{\\circ}$。<br>2. 題目又說 $\\angle B - \\angle C = 60^{\\circ}$。<br>3. 這就變成解聯立方程式！把兩式相加：$(\\angle B + \\angle C) + (\\angle B - \\angle C) = 130^{\\circ} + 60^{\\circ}$。<br>4. 得到 $2\\angle B = 190^{\\circ}$，除以 2 就得到 $\\angle B = 95^{\\circ}$。"
+            },
+            {
+                q: "4. 如右圖,已知 $\\angle BAC$, 曉嵐想利用尺規作圖畫出 $\\angle POQ=\\angle BAC$。請選出按照下列(甲)、(乙)、(丙)、(丁)哪種順序的畫法,可以獲得 $\\angle POQ=\\angle BAC$ 的結果?",
+                ans: "(C) 丁→丙→甲→乙",
+                exp: "這是課本基礎的「等角作圖」步驟：<br>(丁) 先畫出一條新的底線（射線）。<br>(丙) 在原來的 $\\angle BAC$ 上畫一個弧。<br>(甲) 用相同的半徑，在新的底線上畫一個一樣大的弧。<br>(乙) 回到原圖量開口多大（弦長），然後在新的圖上畫弧做交點。最後連線就完成了！"
+            },
+            {
+                q: "5. 如右圖,P為直線L外的一點,則根據作圖痕跡,下列何者不一定正確?",
+                ans: "(C) $\\overline{AP}=\\overline{AQ}$",
+                exp: "這是「過線外一點作垂線」的作圖。我們以 P 為圓心畫弧交直線於 A、B 兩點，這時候 $\\overline{AP}$ 一定等於 $\\overline{BP}$（因為是同一個圓的半徑）。<br>接著我們分別以 A、B 為圓心往下畫弧交於 Q 點。注意！這第二次畫弧的半徑，<strong>不一定要跟第一次一樣大</strong>（只要超過 $\\overline{AB}$ 一半即可）。所以 $\\overline{AP}$ 不一定會等於 $\\overline{AQ}$。"
+            },
+            {
+                q: "6. 已知 $\\triangle ABC$ 為等腰三角形, 頂角 $\\angle A=88^{\\circ}$,觀察右圖作角平分線的作圖痕跡,判斷下列敘述何者正確?",
+                ans: "(C) $\\angle DCE=23^{\\circ}$",
+                exp: "1. 先算等腰三角形的底角：$(180^{\\circ} - 88^{\\circ}) \\div 2 = 46^{\\circ}$，所以 $\\angle C = 46^{\\circ}$。<br>2. 圖中在 C 點作了「角平分線」，把 $46^{\\circ}$ 切成一半。<br>3. 所以分出來的小角 $\\angle DCE = 46^{\\circ} \\div 2 = 23^{\\circ}$。"
+            },
+            {
+                q: "7. 如右圖, $\\angle A+\\angle B+\\angle C+\\angle D+\\angle E+\\angle F=?$",
+                ans: "(B) $360^{\\circ}$",
+                exp: "這個星星圖形其實是由「兩個三角形」疊在一起構成的（分別是 $\\triangle ACE$ 與 $\\triangle BDF$）。<br>一個三角形的內角和是 $180^{\\circ}$，兩個加起來就是 $180^{\\circ} \\times 2 = 360^{\\circ}$。"
+            },
+            {
+                q: "8. 如圖, $\\overline{AD}$ 與 $\\overline{BE}$ 相交於C點。若 $\\angle B=65^{\\circ}$、 $\\angle ACB=50^{\\circ}$、 $\\angle E=80^{\\circ}$, $\\overline{AB}=11$、 $\\overline{AC}=13$、 $\\overline{ED}=14$、 $\\overline{CD}=18$,則 $\\overline{BE}$ 的長度為何?",
+                ans: "(B) 27",
+                exp: "把圖拆成左、右兩個三角形來看。<br>1. 左邊 $\\triangle ABC$ 中，$\\angle A = 180^{\\circ} - 65^{\\circ} - 50^{\\circ} = 65^{\\circ}$。因為 $\\angle A = \\angle B = 65^{\\circ}$，所以它是等腰三角形，得到 $\\overline{BC} = \\overline{AC} = 13$。<br>2. 中間對頂角相等，所以 $\\angle DCE = 50^{\\circ}$。<br>3. 右邊 $\\triangle CDE$ 中，$\\angle D = 180^{\\circ} - 50^{\\circ} - 80^{\\circ} = 50^{\\circ}$。因為 $\\angle D = \\angle DCE = 50^{\\circ}$，它也是等腰三角形，得到 $\\overline{CE} = \\overline{DE} = 14$。<br>4. 最後，$\\overline{BE} = \\overline{BC} + \\overline{CE} = 13 + 14 = 27$。"
+            },
+            {
+                q: "9. 如圖,已知 $\\angle A=\\angle D$,且 $\\overline{AB}=\\overline{DE}$,則加入下列哪一個條件後,仍無法確定 $\\triangle ABC\\cong\\triangle DEF$?",
+                ans: "(D) $\\overline{BC}=\\overline{EF}$",
+                exp: "目前已知「一角（A）」和「一邊（S）」。如果加入 (D) 選項的條件，會變成知道「兩邊一角」，但這個角<strong>不是這兩條邊的夾角</strong>！<br>這就形成了 SSA（邊邊角），而 SSA 是無法保證兩個三角形全等的（除非是直角三角形）。"
+            },
+            {
+                q: "10. $\\triangle ABC$ 中,D點在BC上。將D點分別以AB、AC為對稱軸,畫出對稱點E、F,並連接AE、AF。若 $\\angle B=70^{\\circ}$, $\\angle C=40^{\\circ}$,則 $\\angle EAF$ 的度數為何?",
+                ans: "(D) $140^{\\circ}$",
+                exp: "1. 先算原三角形的頂角：$\\angle BAC = 180^{\\circ} - 70^{\\circ} - 40^{\\circ} = 70^{\\circ}$。<br>2. 根據對稱的性質，摺疊過去的角度會一樣大。也就是說，被 $\\overline{AB}$ 對稱過去的 $\\angle EAB = \\angle DAB$；被 $\\overline{AC}$ 對稱過去的 $\\angle FAC = \\angle DAC$。<br>3. 整個大角 $\\angle EAF$ 其實就是把原本的 $\\angle BAC$ 往兩邊各複製了一次，所以總共是原來的 2 倍：$70^{\\circ} \\times 2 = 140^{\\circ}$。"
+            },
+            {
+                q: "11. 如附圖，E為四邊形ABCD內部一點。若 $\\overline{AD}=\\overline{BC}$，則根據圖中標示的角與角度，求 $\\angle 1 + \\angle 2$ 的度數和為多少？",
+                ans: "(C) $100^{\\circ}$",
+                exp: "這是一種幾何進階題，通常需要作輔助線或旋轉圖形。<br>因為已知 $\\overline{AD}=\\overline{BC}$，搭配圖中給定的角度條件，可以透過旋轉平移構造出全等的三角形。<br>根據全等三角形「對應角相等」的性質，將未知的 $\\angle 1$ 與 $\\angle 2$ 轉移到新的三角形中後，利用內角和計算出它們的總和會是 $100^{\\circ}$。"
+            },
+            {
+                q: "12. 如右圖,若兩三角形全等, 則 $x=?$",
+                ans: "(B) 60",
+                exp: "圖中左邊的三角形已經知道兩個角是 $80^{\\circ}$ 和 $40^{\\circ}$，用內角和算出第三個角：$180^{\\circ} - 80^{\\circ} - 40^{\\circ} = 60^{\\circ}$。<br>因為兩個三角形全等，對應的角度一模一樣，所以右邊三角形缺的那個角 $x$ 就是 60。"
+            },
+            {
+                q: "13. 如附圖,銳角三角形ABC中, 直線L為 $\\overline{BC}$ 的中垂線,直線 M為 $\\angle ABC$ 的角平分線,L與 M相交於P點。若 $\\angle A=60^{\\circ}$, $\\angle ACP=21^{\\circ}$,則 $\\angle ABP$ 的度數為何?",
+                ans: "(C) $33^{\\circ}$",
+                exp: "1. 假設我們要求的 $\\angle ABP = x$。因為 M 是角平分線，所以旁邊的 $\\angle PBC$ 也是 $x$。整個大角 $\\angle B$ 就是 $2x$。<br>2. 因為 L 是中垂線，中垂線上的點到兩端點距離相等（$\\overline{PB}=\\overline{PC}$），所以 $\\triangle PBC$ 是等腰三角形。因此底角 $\\angle PCB$ 也等於 $\\angle PBC = x$。<br>3. 現在看整個大 $\\triangle ABC$ 的內角和：$\\angle A + \\angle B + \\angle C = 180^{\\circ}$。<br>代入數字：$60^{\\circ} + (2x) + (21^{\\circ} + x) = 180^{\\circ}$。<br>解方程式：$3x + 81^{\\circ} = 180^{\\circ} \\Rightarrow 3x = 99^{\\circ} \\Rightarrow x = 33^{\\circ}$。"
+            },
+            {
+                q: "14. 如圖,等腰 $\\triangle ABC$中, $\\overline{AB}=\\overline{AC}$, $\\overline{BE}$ 是 $\\overline{AC}$ 的中垂線。已知 $\\overline{DE}=5$, $\\overline{DB}+\\overline{DC}=24$,則 $\\overline{DB}$ 的長度為何?",
+                ans: "(C) 11",
+                exp: "1. 因為 $\\overline{BE}$ 是中垂線，D 在上面，根據中垂線性質：$\\overline{DA} = \\overline{DC}$。<br>2. 題目說 $\\overline{DB} + \\overline{DC} = 24$，把 $\\overline{DC}$ 換成 $\\overline{DA}$，變成 $\\overline{DB} + \\overline{DA} = 24$。看圖就知道 $\\overline{DB} + \\overline{DA}$ 剛好是整條邊 $\\overline{AB}$，所以 $\\overline{AB} = 24$。<br>3. 因為是等腰三角形，所以 $\\overline{AC}$ 也是 24。E 是中點，所以 $\\overline{AE} = 12$。<br>4. 看直角 $\\triangle ADE$，用畢氏定理算 $\\overline{AD}$：$\\sqrt{12^2 + 5^2} = \\sqrt{144 + 25} = \\sqrt{169} = 13$。<br>5. 最後，$\\overline{DB} = \\overline{AB} - \\overline{AD} = 24 - 13 = 11$。"
+            },
+            {
+                q: "15. $\\triangle ABC$是正三角形,D、E兩點分別在 $\\overline{AB}$ 、 $\\overline{AC}$上,且 $\\overline{DB}+\\overline{EC}=\\overline{BC}$, 則下列敘述何者正確?",
+                ans: "(D) $\\angle ABE=\\angle BCD$",
+                exp: "因為是正三角形，三邊都相等（設為 $s$）。題目說 $\\overline{DB} + \\overline{EC} = s$。<br>因為整段 $\\overline{AB}$ 也是 $s$，所以可以推得 $\\overline{AD}$ 的長度剛好等於 $\\overline{EC}$，同理 $\\overline{AE}$ 的長度剛好等於 $\\overline{DB}$。<br>這會形成兩個全等的三角形 $\\triangle ABE \\cong \\triangle BCD$ (SAS 全等)，所以對應的角度 $\\angle ABE$ 就會等於 $\\angle BCD$。"
+            },
+            {
+                q: "16. 如附圖,在 $\\triangle ABC$中,已知AP平分 $\\angle BAC$且交於P, $\\overline{PM}\\perp\\overline{AB}$於M, $\\overline{PN}\\perp\\overline{AC}$於N。若 $\\overline{AB} = 12$, $\\overline{AC}=15$, $\\triangle ABC$ 的面積為81,則 $\\overline{PM} = ?$",
+                ans: "(A) 6",
+                exp: "1. 根據「角平分線性質」：角平分線上的點到兩邊的垂直距離相等。所以高 $\\overline{PM} = \\overline{PN}$。<br>2. 把大三角形切成上下兩個小三角形（$\\triangle PAB$ 和 $\\triangle PAC$）。<br>3. 面積公式：$\\frac{1}{2} \\times 底 \\times 高$。<br>總面積 $81 = (\\frac{1}{2} \\times 12 \\times \\overline{PM}) + (\\frac{1}{2} \\times 15 \\times \\overline{PM})$。<br>$81 = 6\\overline{PM} + 7.5\\overline{PM} = 13.5\\overline{PM}$。<br>所以 $\\overline{PM} = 81 \\div 13.5 = 6$。"
+            }
+        ];
+
+        const fillData = [
+            {
+                q: "1. 已知正 $n$ 邊形的內角和為 $1800^{\\circ}$，則 $n=$ ?",
+                ans: "12",
+                exp: "同學，請記住多邊形內角和的公式是：$(n-2) \\times 180^{\\circ}$。<br>把題目的數字代進去：$(n-2) \\times 180^{\\circ} = 1800^{\\circ}$。<br>兩邊除以 180，得到 $n-2 = 10$。<br>所以 $n = 12$，這是一個正十二邊形！"
+            },
+            {
+                q: "2. 如圖, $\\angle BAC=30^{\\circ}$,若 $\\angle DBA=5x^{\\circ}$, $\\angle ACE=2x^{\\circ}$,則 $x=$ ?",
+                ans: "30",
+                exp: "圖中底下一條直線是平角（$180^{\\circ}$）。<br>所以三角形裡面的左下角是 $180^{\\circ} - 5x^{\\circ}$，右下角是 $180^{\\circ} - 2x^{\\circ}$。<br>三角形內角和是 $180^{\\circ}$，把它們全加起來：<br>$30^{\\circ} + (180^{\\circ} - 5x) + (180^{\\circ} - 2x) = 180^{\\circ}$<br>化簡一下：$390 - 7x = 180 \\Rightarrow 7x = 210 \\Rightarrow x = 30$。"
+            },
+            {
+                q: "3. 已知一線段,若想將此線段分成 3:5 兩線段,至少須作幾次中垂線作圖?",
+                ans: "3",
+                exp: "$3:5$ 加起來總共是 8 份。<br>中垂線每次都是「對半切」，切 1 次變 2 份，切 2 次變 4 份，切 3 次變 8 份（因為 $2 \\times 2 \\times 2 = 8$）。<br>切出 8 等分後，再取其中的 3 份就可以得到 3:5，所以最少需要作 3 次。"
+            },
+            {
+                q: "4. 如右圖,以C點為圓心,適當長為半徑畫弧... 已知 $\\angle ACB=90^{\\circ}$, $\\overline{AC}=3,\\overline{BC}=4$,則 $\\overline{CG}=$ ?",
+                ans: "2.4",
+                exp: "這長串作圖步驟，其實就是在作「直角三角形斜邊上的高 $\\overline{CG}$」。<br>1. 先用畢氏定理算出斜邊 $\\overline{AB} = \\sqrt{3^2 + 4^2} = 5$。<br>2. 利用「面積算兩次」的技巧：兩股相乘 = 斜邊 $\\times$ 斜邊上的高。<br>$3 \\times 4 = 5 \\times \\overline{CG}$<br>$12 = 5 \\times \\overline{CG}$，所以 $\\overline{CG} = 2.4$。"
+            },
+            {
+                q: "5. 已知正三角形的邊長為10,則此正三角形的面積?",
+                ans: "$25\\sqrt{3}$",
+                exp: "八下必背的正三角形面積公式：$\\frac{\\sqrt{3}}{4} \\times (邊長)^2$。<br>代入邊長 10：$\\frac{\\sqrt{3}}{4} \\times 10^2 = \\frac{\\sqrt{3}}{4} \\times 100 = 25\\sqrt{3}$。"
+            },
+            {
+                q: "6. 如右圖,長方形ABCD中...若 $\\overline{AD}=6,\\overline{CD}=10$,則四邊形CBEF面積為?",
+                ans: "18",
+                exp: "1. 因為畫弧的關係，半徑一樣長。所以 $\\overline{AE} = \\overline{AD} = 6$；而 $\\overline{AF} = \\overline{AB}$（因為是長方形，$\\overline{AB} = \\overline{CD} = 10$），所以 $\\overline{AF} = 10$。<br>2. 看左上角的直角 $\\triangle ADF$，用畢氏定理算出 $\\overline{DF} = \\sqrt{10^2 - 6^2} = 8$。<br>3. 接著算剩下的小線段：上底 $\\overline{FC} = 10 - 8 = 2$；下底 $\\overline{EB} = 10 - 6 = 4$。<br>4. 四邊形 CBEF 是一個直角梯形，面積 = $(上底 + 下底) \\times 高 \\div 2 = (2 + 4) \\times 6 \\div 2 = 18$。"
+            },
+            {
+                q: "7. 如右圖,L為 $\\overline{BC}$ 的中垂線。若 $\\overline{AC}=8,\\overline{AB}=20$, $\\angle A=60^{\\circ}$, 則 $\\triangle ACD$ 的周長為?",
+                ans: "28",
+                exp: "只要看到中垂線，第一反應就是「線上任一點到兩端點等距離」。<br>所以 L 上的點 D，連到 B 和 C 距離一樣，也就是 $\\overline{DB} = \\overline{DC}$。<br>題目問 $\\triangle ACD$ 周長 = $\\overline{AC} + \\overline{AD} + \\overline{DC}$。<br>把 $\\overline{DC}$ 換成 $\\overline{DB}$，周長就變成 $\\overline{AC} + \\overline{AD} + \\overline{DB}$。<br>看圖就知道 $\\overline{AD} + \\overline{DB}$ 剛好是一整條直線 $\\overline{AB}$！<br>所以周長 = $\\overline{AC} + \\overline{AB} = 8 + 20 = 28$。"
+            },
+            {
+                q: "8. 如右圖,已知 $\\overline{AB}\\perp\\overline{AO}$, $\\overline{BC}\\perp\\overline{OC}$, $\\overline{AB}=\\overline{BC}=\\overline{CD}$, $\\angle AOB=35^{\\circ}$,則 $\\angle AOD=$ 度。",
+                ans: "105",
+                exp: "同學，這題其實是在考你們八下學的<strong>「角平分線性質」</strong>和<strong>「RHS 全等」</strong>！我們一步一步來看：<br>1. <strong>抓關鍵字</strong>：題目給了垂直符號（$\\perp$），表示這些點到中心線的距離是用直角去量的。又說 $\\overline{AB}=\\overline{BC}$（距離一樣）。<br>2. <strong>角平分線逆定理</strong>：你想想看，如果有一個點 B，它到兩邊 OA 和 OC 的「垂直距離一模一樣」，那代表什麼？代表點 B 一定在 $\\angle AOC$ 的「角平分線」上！<br>3. <strong>全等三角形</strong>：用全等的角度來想，連接 $\\overline{OB}$ 後，會形成兩個直角三角形 $\\triangle OAB$ 和 $\\triangle OCB$。它們共用最長的斜邊 $\\overline{OB}$，且有一股 $\\overline{AB}=\\overline{CB}$。這符合直角三角形專屬的 <strong>RHS 全等性質</strong>！<br>4. <strong>推導角度</strong>：因為三角形全等，所以裡面的角度也一樣大，$\\angle AOB = \\angle BOC = 35^{\\circ}$。<br>5. <strong>連鎖反應</strong>：圖形往往是連鎖的，同理旁邊的 C 點也會讓 $\\angle BOC = \\angle COD = 35^{\\circ}$。<br>6. <strong>算總和</strong>：題目問最大的角 $\\angle AOD$，就是把三個 $35^{\\circ}$ 加起來：$35^{\\circ} + 35^{\\circ} + 35^{\\circ} = 105^{\\circ}$。輕鬆拿分！"
+            },
+            {
+                q: "9. 正三角形ABC與正方形CDEF中、B、C、D 三點共線...動點P沿著CA由C往A移動,則FP的長度最小為多少?",
+                ans: "2.5",
+                exp: "要找點到線的「最短距離」，就是要找「垂直高」。<br>1. 因為 B、C、D 排成一條直線（平角 180 度），正三角形的 $\\angle BCA = 60^{\\circ}$，所以 $\\overline{CA}$ 和 $\\overline{CD}$ 的夾角是 $180^{\\circ} - 60^{\\circ} = 120^{\\circ}$。<br>2. 正方形的 $\\angle FCD$ 是 $90^{\\circ}$。所以 $\\overline{CF}$ 和 $\\overline{CA}$ 中間的夾角就是 $120^{\\circ} - 90^{\\circ} = 30^{\\circ}$。<br>3. 當 P 移動到使 $\\overline{FP} \\perp \\overline{CA}$ 時距離最短。這時候會形成一個「30-60-90 度的直角三角形」。<br>4. 斜邊是正方形的邊長 $\\overline{CF} = 5$，30度對到的邊（最短距離 $\\overline{FP}$）剛好是斜邊的一半，所以 $5 \\div 2 = 2.5$。"
+            },
+            {
+                q: "10. 要證明 $\\triangle ABC\\cong\\triangle DEF$...已知兩邊相等，需再加上下列哪個條件才能證明兩個三角形全等?(複選)",
+                ans: "(乙)(丁)",
+                exp: "已經知道「兩個邊（S, S）」相等了。要湊齊全等條件，你有兩條路可以選：<br>第一條路：再找「第三個邊」也相等，構成 <strong>SSS 全等</strong>。對應的選項是 (丁) $\\overline{BC}=\\overline{EF}$。<br>第二條路：找這兩條邊的「夾角」相等，構成 <strong>SAS 全等</strong>。因為已知邊是 AB、AC，夾角就是 $\\angle A$。對應選項是 (乙) $\\angle A=\\angle D$。"
+            },
+            {
+                q: "11. 下列關於全等三角形的敘述,哪幾項是正確的?(單選或複選)",
+                ans: "(B)(D)",
+                exp: "這題在考全等性質的基本觀念，遇到這種敘述題，我們要在腦海裡舉反例！<br><ul><li class='mt-2'>❌ <strong>(A) 錯！</strong> 雖然全等要 3 個條件，但「不是隨便 3 個都可以」。例如給三個角 (AAA)，兩個三角形可能長得一樣但「一個大、一個小」（這叫相似）；給兩邊加上一個沒被夾住的角 (SSA)，也不保證全等。</li><li class='mt-2'>✅ <strong>(B) 對！</strong> 全等圖形的意思就是「大小形狀完全一樣」。就像你拿著一塊三角板，不管你怎麼旋轉它、平移它、甚至翻面，它的邊長和角度都不會變。</li><li class='mt-2'>❌ <strong>(C) 錯！</strong> 「SSS 全等性質」告訴我們，只要三條邊的長度都確定了，三角形的骨架就卡死了，根本無法改變形狀，所以不需要知道角度就能確定全等。</li><li class='mt-2'>✅ <strong>(D) 對！</strong> 這是直角三角形專屬的大絕招「RHS 全等性質」（Right angle 直角、Hypotenuse 斜邊、Side 一股）。只要斜邊和其中一股相等，就能保證全等。</li></ul>"
+            },
+            {
+                q: "12. 如圖,將 $\\triangle PQR$以R為定點,按順時針的方向旋轉50°...則 $\\angle 1+\\angle 2 =$ 度。",
+                ans: "150",
+                exp: "同學，處理旋轉題目要抓住兩個重點：「旋轉角不變」以及「對應圖形全等」。<br>1. 題目說旋轉了 $50^{\\circ}$，代表任何一條對應線段（例如轉過去的 $\\overline{PQ}$ 跟原本的線段）交錯時產生的夾角，必定跟旋轉角有關（就是 $50^{\\circ}$ 或者是它的補角 $130^{\\circ}$）。<br>2. 圖中交叉處會形成一個多邊形與三角形，$\\angle 1$ 和 $\\angle 2$ 剛好位在這個結構中。<br>3. 我們利用「對頂角相等」把角度都推移到同一個多邊形內，再利用「三角形內角和等於 $180^{\\circ}$」的概念。因為 $\\angle 1$ 和 $\\angle 2$ 與這個 $50^{\\circ}$ 的旋轉交角會互相補足成平角，經過角度運算互相抵銷後，即可推導出 $\\angle 1 + \\angle 2 = 150^{\\circ}$ 的結果！"
+            }
+        ];
+
+        // --- 渲染畫面邏輯 ---
+        function createCard(data, index, type) {
+            const prefix = type === 'mcq' ? '選擇' : '填充';
+            const colorClass = type === 'mcq' ? 'border-indigo-500' : 'border-emerald-500';
+            const bgAnsClass = type === 'mcq' ? 'bg-indigo-50' : 'bg-emerald-50';
+            const textAnsClass = type === 'mcq' ? 'text-indigo-800' : 'text-emerald-800';
+
+            return `
+                <div class="bg-white rounded-xl shadow-sm border-l-4 ${colorClass} p-5 sm:p-6 transition hover:shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-800 leading-relaxed">${data.q}</h3>
+                    
+                    <button class="toggle-btn mt-4 flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition outline-none">
+                        <svg class="w-4 h-4 mr-1 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <span>查看解答與詳解</span>
+                    </button>
+                    
+                    <div class="answer-block rounded-lg ${bgAnsClass}">
+                        <div class="font-bold ${textAnsClass} text-lg mb-3 border-b border-white/50 pb-2">
+                            💡 解答：${data.ans}
+                        </div>
+                        <div class="text-gray-700 leading-relaxed space-y-2 text-[15px]">
+                            ${data.exp}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        const mcqSection = document.getElementById('section-mcq');
+        const fillSection = document.getElementById('section-fill');
+
+        mcqSection.innerHTML = mcqData.map((d, i) => createCard(d, i, 'mcq')).join('');
+        fillSection.innerHTML = fillData.map((d, i) => createCard(d, i, 'fill')).join('');
+
+        // --- 互動邏輯 (Tabs & Accordions) ---
+        
+        // 渲染完 DOM 後再初始化數學公式
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError : false
+            });
+            
+            // 綁定手風琴(詳解展開)按鈕
+            const toggleBtns = document.querySelectorAll('.toggle-btn');
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const ansBlock = this.nextElementSibling;
+                    const icon = this.querySelector('svg');
+                    const text = this.querySelector('span');
+                    
+                    ansBlock.classList.toggle('show');
+                    
+                    if(ansBlock.classList.contains('show')) {
+                        icon.classList.add('rotate-180');
+                        text.textContent = '隱藏解答';
+                    } else {
+                        icon.classList.remove('rotate-180');
+                        text.textContent = '查看解答與詳解';
+                    }
+                });
+            });
+        });
+
+        // 頁籤切換
+        const tabMcq = document.getElementById('tab-mcq');
+        const tabFill = document.getElementById('tab-fill');
+
+        function switchTab(showMcq) {
+            if (showMcq) {
+                mcqSection.classList.remove('hidden');
+                fillSection.classList.add('hidden');
+                tabMcq.classList.replace('text-gray-600', 'text-indigo-600');
+                tabMcq.classList.replace('hover:text-indigo-600', 'bg-white');
+                tabMcq.classList.add('bg-white', 'shadow-sm');
+                tabFill.classList.replace('bg-white', 'hover:text-indigo-600');
+                tabFill.classList.replace('text-indigo-600', 'text-gray-600');
+                tabFill.classList.remove('shadow-sm');
+            } else {
+                fillSection.classList.remove('hidden');
+                mcqSection.classList.add('hidden');
+                tabFill.classList.replace('text-gray-600', 'text-indigo-600');
+                tabFill.classList.replace('hover:text-indigo-600', 'bg-white');
+                tabFill.classList.add('bg-white', 'shadow-sm');
+                tabMcq.classList.replace('bg-white', 'hover:text-indigo-600');
+                tabMcq.classList.replace('text-indigo-600', 'text-gray-600');
+                tabMcq.classList.remove('shadow-sm');
+            }
+        }
+
+        tabMcq.addEventListener('click', () => switchTab(true));
+        tabFill.addEventListener('click', () => switchTab(false));
+
+        // 展開全部 / 收合全部
+        const toggleAllBtn = document.getElementById('toggle-all');
+        let isAllExpanded = false;
+
+        toggleAllBtn.addEventListener('click', () => {
+            isAllExpanded = !isAllExpanded;
+            const activeSection = !mcqSection.classList.contains('hidden') ? mcqSection : fillSection;
+            const buttons = activeSection.querySelectorAll('.toggle-btn');
+            
+            buttons.forEach(btn => {
+                const ansBlock = btn.nextElementSibling;
+                const icon = btn.querySelector('svg');
+                const text = btn.querySelector('span');
+
+                if (isAllExpanded) {
+                    ansBlock.classList.add('show');
+                    icon.classList.add('rotate-180');
+                    text.textContent = '隱藏解答';
+                } else {
+                    ansBlock.classList.remove('show');
+                    icon.classList.remove('rotate-180');
+                    text.textContent = '查看解答與詳解';
+                }
+            });
+            toggleAllBtn.textContent = isAllExpanded ? '收合全部詳解' : '展開全部詳解';
+        });
+
+        // 切換頁籤時重置「展開全部」按鈕狀態
+        [tabMcq, tabFill].forEach(tab => {
+            tab.addEventListener('click', () => {
+                isAllExpanded = false;
+                toggleAllBtn.textContent = '展開全部詳解';
+            });
+        });
+    </script>
+</body>
+</html>
